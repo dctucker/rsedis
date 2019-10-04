@@ -298,33 +298,33 @@ fn is_print(c: char) -> bool {
     unsafe { libc::funcs::c95::ctype::isprint(c as c_int) != 0 }
 }
 pub fn format_repr(f: &mut fmt::Formatter, s: &[u8]) -> Result<(), fmt::Error> {
-    try!(f.write_str("\""));
+    f.write_str("\"")?;
     for c in s {
         match *c {
             0x07 => {
-                try!(f.write_str("\\a"));
+                f.write_str("\\a")?;
                 continue;
             }
             0x08 => {
-                try!(f.write_str("\\b"));
+                f.write_str("\\b")?;
                 continue;
             }
             _ => (),
         };
-        try!(match *c as char {
-            '\\' => f.write_str("\\\\"),
-            '\"' => f.write_str("\\\""),
-            '\n' => f.write_str("\\n"),
-            '\r' => f.write_str("\\r"),
-            '\t' => f.write_str("\\t"),
+        match *c as char {
+            '\\' => f.write_str("\\\\")?,
+            '\"' => f.write_str("\\\"")?,
+            '\n' => f.write_str("\\n")?,
+            '\r' => f.write_str("\\r")?,
+            '\t' => f.write_str("\\t")?,
             x => {
                 if is_print(x) {
                     write!(f, "{}", x)
                 } else {
                     write!(f, "\\x{:02x}", x as u8)
                 }
-            }
-        })
+            }?
+        };
     }
     f.write_str("\"")
 }
